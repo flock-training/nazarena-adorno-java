@@ -23,7 +23,9 @@ dependencies {
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
         implementation("org.springframework.boot:spring-boot-starter-data-jpa")
         implementation("org.springframework.boot:spring-boot-starter-web")
-        implementation("mysql:mysql-connector-java:8.0.33") 
+        implementation("mysql:mysql-connector-java:8.0.33")
+        developmentOnly("org.springframework.boot:spring-boot-devtools")
+        implementation("org.springframework.boot:spring-boot-starter-thymeleaf") 
 }
 
 tasks.withType<Test> {
