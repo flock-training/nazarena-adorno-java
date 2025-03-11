@@ -1,23 +1,49 @@
 package Flock.Training.models;
 
+import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+
+@Entity
+@Table(name = "Books")
+
 public class Book {
 
     //Attributes
-    public String genre;
-    public String author;
-    public String image;
-    public String title;
-    public String subtitle;
-    public String publisher;
-    public String year;
-    public int pages;
-    public String isbn;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String genre;
+
+    private String author;
+
+    private String image;
+
+    private String title;
+
+    private String subtitle;
+
+    private String publisher;
+
+    private String year;
+
+    private int pages;
+
+    private String isbn;
 
     //Default constructor
     public Book() {
     }
 
-    //Getters y Setters
+    //Getters and Setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getGenre() {
         return genre;
     }
