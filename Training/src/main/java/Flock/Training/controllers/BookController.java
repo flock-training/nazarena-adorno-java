@@ -35,8 +35,6 @@ public class BookController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Book create(@RequestBody Book book) {
-        //return bookRepository.save(book);
-
         try {
             return bookRepository.save(book);
         } catch (Exception ex) {
