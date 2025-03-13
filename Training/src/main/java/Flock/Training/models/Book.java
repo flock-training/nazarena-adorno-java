@@ -2,6 +2,10 @@ package Flock.Training.models;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 @Entity
 @Table(name = "Books")
 
@@ -29,6 +33,10 @@ public class Book {
     private int pages;
 
     private String isbn;
+
+    @ManyToMany(mappedBy = "books")
+    @Column(nullable = false)
+    private List<User> users = new ArrayList<>();
 
     //Default constructor
     public Book() {
@@ -113,5 +121,13 @@ public class Book {
 
     public void setPages(int pages) {
         this.pages = pages;
+    }
+
+    public List<User> getUsers() {
+        return (List<User>) Collections.unmodifiableList(users);
+    }
+
+    public void setUsers(List<User> users) {
+        this.users = users;
     }
 }
