@@ -80,8 +80,7 @@ public class User {
         }
 
         for (Book book : books) {
-            boolean exists = this.books.stream()
-                    .anyMatch(existingBook -> existingBook.getId().equals(book.getId()));
+            boolean exists = bookExistsInUserList(this.books, book);
             if (exists) {
                 throw new BookAlreadyOwnedException("The book with ID " + book.getId() + " and title '" + book.getTitle() + "' is already in the list.");
             }
@@ -94,8 +93,7 @@ public class User {
             this.books = new ArrayList<>();
         }
 
-        boolean exists = this.books.stream()
-                .anyMatch(existingBook -> existingBook.getId().equals(book.getId()));
+        boolean exists = bookExistsInUserList(this.books, book);
         if (exists) {
             throw new BookAlreadyOwnedException("The book with ID " + book.getId() + " and title '" + book.getTitle() + "' is already in the list.");
         }
@@ -107,11 +105,15 @@ public class User {
             throw new BookNotFoundException("The user does not have a book list yet.");
         }
 
-        boolean exists = this.books.stream()
-                .anyMatch(existingBook -> existingBook.getId().equals(book.getId()));
+        boolean exists = bookExistsInUserList(this.books, book);
         if (!exists) {
             throw new BookNotFoundException("The book with ID " + book.getId() + " and title '" + book.getTitle() + "' is not in the list.");
         }
         this.books.remove(book);
+    }
+
+    private boolean bookExistsInUserList(List<Book> existingBooks, Book newBook) {
+        return existingBooks.stream()
+                .anyMatch(existingBook -> existingBook.getId().equals(newBook.getId()));
     }
 }
