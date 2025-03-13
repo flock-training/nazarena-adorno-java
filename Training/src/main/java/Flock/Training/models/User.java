@@ -1,6 +1,7 @@
 package Flock.Training.models;
 
 import Flock.Training.exceptions.BookAlreadyOwnedException;
+import Flock.Training.exceptions.BookNotFoundException;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -86,5 +87,31 @@ public class User {
             }
             this.books.add(book);
         }
+    }
+
+    public void addBook(Book book) {
+        if (this.books == null) {
+            this.books = new ArrayList<>();
+        }
+
+        boolean exists = this.books.stream()
+                .anyMatch(existingBook -> existingBook.getId().equals(book.getId()));
+        if (exists) {
+            throw new BookAlreadyOwnedException("The book with ID " + book.getId() + " and title '" + book.getTitle() + "' is already in the list.");
+        }
+        this.books.add(book);
+    }
+
+    public void removeBook(Book book) {
+        if (this.books == null) {
+            throw new BookNotFoundException("The user does not have a book list yet.");
+        }
+
+        boolean exists = this.books.stream()
+                .anyMatch(existingBook -> existingBook.getId().equals(book.getId()));
+        if (!exists) {
+            throw new BookNotFoundException("The book with ID " + book.getId() + " and title '" + book.getTitle() + "' is not in the list.");
+        }
+        this.books.remove(book);
     }
 }
