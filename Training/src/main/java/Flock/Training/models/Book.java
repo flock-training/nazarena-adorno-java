@@ -34,10 +34,6 @@ public class Book {
 
     private String isbn;
 
-    @ManyToMany(mappedBy = "books")
-    @Column(nullable = false)
-    private List<User> users = new ArrayList<>();
-
     //Default constructor
     public Book() {
     }
@@ -121,13 +117,5 @@ public class Book {
 
     public void setPages(int pages) {
         this.pages = pages;
-    }
-
-    public List<User> getUsers() {
-        return (List<User>) Collections.unmodifiableList(users);
-    }
-
-    public void setUsers(List<User> users) {
-        this.users = users;
     }
 }
