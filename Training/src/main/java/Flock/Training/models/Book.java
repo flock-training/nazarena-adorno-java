@@ -2,10 +2,6 @@ package Flock.Training.models;
 
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 @Entity
 @Table(name = "Books")
 
