@@ -10,6 +10,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
+/**
+ * Controlador REST para la gestión de libros en la API.
+ */
 @RestController
 @RequestMapping("/api/books")
 public class BookController {
@@ -32,6 +35,13 @@ public class BookController {
         return bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException("Book with ID " + id + " not found"));
     }
 
+    /**
+     * Crea un nuevo libro.
+     *
+     * @param book Nuevo objeto libro a guardar.
+     * @return Libro guardado.
+     * @throws ResponseStatusException Si ocurre un error al crear el libro.
+     */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Book create(@RequestBody Book book) {
@@ -46,10 +56,19 @@ public class BookController {
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         bookRepository.findById(id)
-         .orElseThrow(() -> new BookNotFoundException("Book with ID " + id + " not found"));
+                .orElseThrow(() -> new BookNotFoundException("Book with ID " + id + " not found"));
         bookRepository.deleteById(id);
     }
 
+    /**
+     * Actualiza un libro existente en la base de datos.
+     *
+     * @param book El objeto libro con los nuevos datos.
+     * @param id   El ID del libro a actualizar.
+     * @return El libro actualizado.
+     * @throws BookIdMismatchException Si el ID en la ruta y el cuerpo del objeto no coinciden.
+     * @throws BookNotFoundException   Si el libro con el ID especificado no existe.
+     */
     @PutMapping("/{id}")
     public Book updateBook(@RequestBody Book book, @PathVariable Long id) {
         if (book.getId() != id) {

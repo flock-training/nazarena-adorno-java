@@ -2,12 +2,17 @@ package Flock.Training.models;
 
 import jakarta.persistence.*;
 
+/**
+ * Representa la entidad 'Book' de la tabla 'Books'
+ */
 @Entity
 @Table(name = "Books")
 
 public class Book {
 
-    //Attributes
+    /**
+     * Atributos
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,13 +33,22 @@ public class Book {
 
     private int pages;
 
+    /**
+     * Código ISBN del libro.
+     * <p>
+     * Número de 13 cifras que identifica de una manera única a cada libro.
+     */
     private String isbn;
 
-    //Default constructor
+    /**
+     * Constructor por defecto
+     */
     public Book() {
     }
 
-    //Getters and Setters
+    /**
+     * Getters y Setters
+     */
     public Long getId() {
         return id;
     }

@@ -9,10 +9,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Representa la entidad 'User' de la tabla 'Users'
+ */
 @Entity
 @Table(name = "Users")
 
 public class User {
+
+    /**
+     * Atributos
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,6 +33,12 @@ public class User {
     @Column(nullable = false)
     private LocalDate birthdate;
 
+    /**
+     * Lista de libros que posee el usuario.
+     * <p>
+     * Utiliza la tabla 'user_books' para relacionarlos
+     * mediante 'user_id' y 'book_id'.
+     */
     @ManyToMany
     @JoinTable(
             name = "user_books",
@@ -35,9 +48,15 @@ public class User {
     @Column(nullable = false)
     private List<Book> books = new ArrayList<>();
 
+    /**
+     * Constructor por defecto
+     */
     public User() {
     }
 
+    /**
+     * Getters y Setters
+     */
     public Long getId() {
         return id;
     }
@@ -70,48 +89,79 @@ public class User {
         this.birthdate = birthdate;
     }
 
+    /**
+     * Obtiene la lista de libros del usuario.
+     * La lista devuelta es inmodificable.
+     *
+     * @return Lista de libros asociados al usuario.
+     */
     public List<Book> getBooks() {
         return (List<Book>) Collections.unmodifiableList(books);
     }
 
+    /**
+     * Establece una nueva lista de libros para el usuario.
+     * Si un libro ya está en la lista, lanza una excepción.
+     *
+     * @param books Lista de libros a asignar.
+     * @throws BookAlreadyOwnedException Si algún libro ya está en la lista del usuario.
+     */
     public void setBooks(List<Book> books) {
         if (this.books == null) {
             this.books = new ArrayList<>();
         }
 
         for (Book book : books) {
-            boolean exists = bookExistsInUserList(this.books, book);
-            if (exists) {
+            if (bookExistsInUserList(this.books, book)) {
                 throw new BookAlreadyOwnedException("The book with ID " + book.getId() + " and title '" + book.getTitle() + "' is already in the list.");
             }
             this.books.add(book);
         }
     }
 
+    /**
+     * Agrega un libro a la lista del usuario.
+     * Si el libro ya está en la lista, lanza una excepción.
+     *
+     * @param book El libro a agregar.
+     * @throws BookAlreadyOwnedException Si el libro ya está en la lista del usuario.
+     */
     public void addBook(Book book) {
         if (this.books == null) {
             this.books = new ArrayList<>();
         }
 
-        boolean exists = bookExistsInUserList(this.books, book);
-        if (exists) {
+        if (bookExistsInUserList(this.books, book)) {
             throw new BookAlreadyOwnedException("The book with ID " + book.getId() + " and title '" + book.getTitle() + "' is already in the list.");
         }
         this.books.add(book);
     }
 
+    /**
+     * Elimina un libro de la lista del usuario.
+     * Si usuario no posee libros o el libro no está en la lista, lanza una excepción.
+     *
+     * @param book El libro a eliminar.
+     * @throws BookNotFoundException Si el libro no se encuentra en la lista del usuario.
+     */
     public void removeBook(Book book) {
         if (this.books == null) {
             throw new BookNotFoundException("The user does not have a book list yet.");
         }
 
-        boolean exists = bookExistsInUserList(this.books, book);
-        if (!exists) {
+        if (!bookExistsInUserList(this.books, book)) {
             throw new BookNotFoundException("The book with ID " + book.getId() + " and title '" + book.getTitle() + "' is not in the list.");
         }
         this.books.remove(book);
     }
 
+    /**
+     * Verifica si un libro ya existe en la lista del usuario.
+     *
+     * @param existingBooks Lista de libros actual del usuario.
+     * @param newBook       Libro a verificar.
+     * @return {@code true} si el libro ya está en la lista, {@code false} en caso contrario.
+     */
     private boolean bookExistsInUserList(List<Book> existingBooks, Book newBook) {
         return existingBooks.stream()
                 .anyMatch(existingBook -> existingBook.getId().equals(newBook.getId()));
