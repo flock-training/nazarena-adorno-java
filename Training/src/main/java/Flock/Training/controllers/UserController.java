@@ -69,7 +69,7 @@ public class UserController {
      * @param id   El ID del usuario a actualizar.
      * @return El usuario actualizado.
      * @throws UserIdMismatchException Si el ID en la ruta y el cuerpo del objeto no coinciden.
-     * @throws UserNotFoundException   Si el libro con el ID especificado no existe.
+     * @throws UserNotFoundException   Si el usuario con el ID especificado no existe.
      */
     @PutMapping("/{id}")
     public User updateUser(@RequestBody User user, @PathVariable Long id) {
