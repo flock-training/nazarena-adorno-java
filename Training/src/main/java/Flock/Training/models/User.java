@@ -101,22 +101,11 @@ public class User {
 
     /**
      * Establece una nueva lista de libros para el usuario.
-     * Si un libro ya está en la lista, lanza una excepción.
      *
      * @param books Lista de libros a asignar.
-     * @throws BookAlreadyOwnedException Si algún libro ya está en la lista del usuario.
      */
     public void setBooks(List<Book> books) {
-        if (this.books == null) {
-            this.books = new ArrayList<>();
-        }
-
-        for (Book book : books) {
-            if (bookExistsInUserList(this.books, book)) {
-                throw new BookAlreadyOwnedException("The book with ID " + book.getId() + " and title '" + book.getTitle() + "' is already in the list.");
-            }
-            this.books.add(book);
-        }
+        this.books = books;
     }
 
     /**
