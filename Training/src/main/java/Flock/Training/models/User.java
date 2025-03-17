@@ -2,6 +2,7 @@ package Flock.Training.models;
 
 import Flock.Training.exceptions.BookAlreadyOwnedException;
 import Flock.Training.exceptions.BookNotFoundException;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -14,7 +15,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "Users")
-
+@Schema(name = "User", description = "Representa un usuario en la plataforma")
 public class User {
 
     /**
@@ -22,15 +23,19 @@ public class User {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Schema(description = "ID único del usuario", example = "1")
     private Long id;
 
     @Column(nullable = false)
+    @Schema(description = "Nombre del usuario", example = "johndoe123")
     private String username;
 
     @Column(nullable = false)
+    @Schema(description = "Nombre completo del usuario", example = "John Doe")
     private String name;
 
     @Column(nullable = false)
+    @Schema(description = "Fecha de nacimiento del usuario", example = "1990-05-15")
     private LocalDate birthdate;
 
     /**
@@ -46,6 +51,7 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "book_id")
     )
     @Column(nullable = false)
+    @Schema(description = "Lista de libros asociados al usuario")
     private List<Book> books = new ArrayList<>();
 
     /**
