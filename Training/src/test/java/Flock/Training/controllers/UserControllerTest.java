@@ -23,8 +23,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -43,6 +46,7 @@ class UserControllerTest {
 
     private static final Long USER_ID = 1L;
     private static final Long BOOK_ID = 100L;
+    private static final String URL_API = "/api/users";
 
     private User user;
     private Book book;
@@ -87,7 +91,7 @@ class UserControllerTest {
     void shouldGetAllUsers() throws Exception {
         when(userRepository.findAll()).thenReturn(Collections.singletonList(user));
 
-        mockMvc.perform(get("/api/users"))
+        mockMvc.perform(get(URL_API))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].username").value("johndoe123"));
     }
@@ -96,7 +100,7 @@ class UserControllerTest {
     void shouldGetUserById() throws Exception {
         mockUserExists();
 
-        mockMvc.perform(get("/api/users/{userId}", USER_ID))
+        mockMvc.perform(get(URL_API + "/{userId}", USER_ID))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username").value("johndoe123"));
     }
@@ -105,7 +109,7 @@ class UserControllerTest {
     void shouldReturn404WhenUserNotFound() throws Exception {
         mockUserNotExists();
 
-        mockMvc.perform(get("/api/users/{userId}", USER_ID))
+        mockMvc.perform(get(URL_API + "/{userId}", USER_ID))
                 .andExpect(status().isNotFound());
     }
 
@@ -113,7 +117,7 @@ class UserControllerTest {
     void shouldCreateUser() throws Exception {
         when(userRepository.save(any(User.class))).thenReturn(user);
 
-        mockMvc.perform(post("/api/users")
+        mockMvc.perform(post(URL_API)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(getUserJson()))
                 .andExpect(status().isCreated())
@@ -126,7 +130,7 @@ class UserControllerTest {
         mockBookExists();
         when(userRepository.save(any(User.class))).thenReturn(user);
 
-        mockMvc.perform(post("/api/users/{userId}/books/{bookId}", USER_ID, BOOK_ID))
+        mockMvc.perform(post(URL_API + "/{userId}/books/{bookId}", USER_ID, BOOK_ID))
                 .andExpect(status().isOk());
     }
 
@@ -134,7 +138,7 @@ class UserControllerTest {
     void shouldReturn404WhenAddingBookToNonExistingUser() throws Exception {
         mockUserNotExists();
 
-        mockMvc.perform(post("/api/users/{userId}/books/{bookId}", USER_ID, BOOK_ID))
+        mockMvc.perform(post(URL_API + "/{userId}/books/{bookId}", USER_ID, BOOK_ID))
                 .andExpect(status().isNotFound());
     }
 
@@ -143,7 +147,7 @@ class UserControllerTest {
         mockUserExists();
         mockBookNotExists();
 
-        mockMvc.perform(post("/api/users/{userId}/books/{bookId}", USER_ID, BOOK_ID))
+        mockMvc.perform(post(URL_API + "/{userId}/books/{bookId}", USER_ID, BOOK_ID))
                 .andExpect(status().isNotFound());
     }
 
@@ -154,7 +158,7 @@ class UserControllerTest {
         mockBookExists();
         when(userRepository.save(any(User.class))).thenReturn(user);
 
-        mockMvc.perform(delete("/api/users/{userId}/books/{bookId}", USER_ID, BOOK_ID))
+        mockMvc.perform(delete(URL_API + "/{userId}/books/{bookId}", USER_ID, BOOK_ID))
                 .andExpect(status().isOk());
     }
 
@@ -162,7 +166,7 @@ class UserControllerTest {
     void shouldReturn404WhenRemovingBookFromNonExistingUser() throws Exception {
         mockUserNotExists();
 
-        mockMvc.perform(delete("/api/users/{userId}/books/{bookId}", USER_ID, BOOK_ID))
+        mockMvc.perform(delete(URL_API + "/{userId}/books/{bookId}", USER_ID, BOOK_ID))
                 .andExpect(status().isNotFound());
     }
 
@@ -171,7 +175,7 @@ class UserControllerTest {
         mockUserExists();
         mockBookNotExists();
 
-        mockMvc.perform(delete("/api/users/{userId}/books/{bookId}", USER_ID, BOOK_ID))
+        mockMvc.perform(delete(URL_API + "/{userId}/books/{bookId}", USER_ID, BOOK_ID))
                 .andExpect(status().isNotFound());
     }
 }

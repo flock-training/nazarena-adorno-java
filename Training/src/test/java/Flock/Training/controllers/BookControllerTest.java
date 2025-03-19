@@ -20,8 +20,11 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -43,6 +46,8 @@ class BookControllerTest {
 
     private Book book;
 
+    private static final String URL_API = "/api/books";
+
     @BeforeEach
     void setUp() {
         book = new Book("Narrativa", "J.R.R Tolkien", "http://urlImagen.com",
@@ -55,7 +60,7 @@ class BookControllerTest {
     void shouldGetBookById() throws Exception {
         when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
 
-        performGet("/api/books/1")
+        performGet(URL_API + "/1")
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value(book.getTitle()))
                 .andExpect(jsonPath("$.author").value(book.getAuthor()));
@@ -65,7 +70,7 @@ class BookControllerTest {
     void shouldReturnNotFoundWhenBookDoesNotExist() throws Exception {
         when(bookRepository.findById(99L)).thenReturn(Optional.empty());
 
-        performGet("/api/books/99")
+        performGet(URL_API + "/99")
                 .andExpect(status().isNotFound());
     }
 
@@ -73,7 +78,7 @@ class BookControllerTest {
     void shouldGetBooksByTitle() throws Exception {
         when(bookRepository.findByTitle(book.getTitle())).thenReturn(List.of(book));
 
-        performGet("/api/books/title/" + book.getTitle())
+        performGet(URL_API + "/title/" + book.getTitle())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].author").value(book.getAuthor()));
     }
@@ -82,7 +87,7 @@ class BookControllerTest {
     void shouldCreateBook() throws Exception {
         when(bookRepository.save(any(Book.class))).thenReturn(book);
 
-        performPost("/api/books", book)
+        performPost(URL_API, book)
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.title").value(book.getTitle()));
     }
@@ -92,7 +97,7 @@ class BookControllerTest {
         when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
         doNothing().when(bookRepository).deleteById(1L);
 
-        performDelete("/api/books/1")
+        performDelete(URL_API + "/1")
                 .andExpect(status().isOk());
 
         verify(bookRepository, times(1)).deleteById(1L);
