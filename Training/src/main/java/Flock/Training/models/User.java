@@ -60,6 +60,13 @@ public class User {
     public User() {
     }
 
+    public User(String username, String name, LocalDate birthdate, List<Book> books) {
+        this.username = username;
+        this.name = name;
+        this.birthdate = birthdate;
+        this.books = books;
+    }
+
     /**
      * Getters y Setters
      */

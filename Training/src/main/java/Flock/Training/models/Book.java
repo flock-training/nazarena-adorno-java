@@ -58,6 +58,18 @@ public class Book {
     public Book() {
     }
 
+    public Book(String genre, String author, String image, String title, String subtitle, String publisher, String year, int pages, String isbn) {
+        this.genre = genre;
+        this.author = author;
+        this.image = image;
+        this.title = title;
+        this.subtitle = subtitle;
+        this.publisher = publisher;
+        this.year = year;
+        this.pages = pages;
+        this.isbn = isbn;
+    }
+
     /**
      * Getters y Setters
      */
