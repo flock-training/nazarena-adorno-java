@@ -203,7 +203,7 @@ public class UserController {
      */
     @PutMapping("/{userId}/books")
     @Operation(
-            summary = "Actualiza completamente la lista de libros del usuario",
+            summary = "Actualizar completamente la lista de libros del usuario",
             description = "Reemplaza la lista de libros del usuario por una nueva lista",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Lista de libros actualizada correctamente"),
