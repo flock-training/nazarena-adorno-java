@@ -7,7 +7,10 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
-@ComponentScan(basePackages = "Flock.Training.controllers")
+@ComponentScan(basePackages = {
+        "Flock.Training.controllers",
+        "Flock.Training.services"
+})
 @EntityScan("Flock.Training.models")
 @EnableJpaRepositories("Flock.Training.repositories")
 

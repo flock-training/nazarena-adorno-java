@@ -4,6 +4,7 @@ import Flock.Training.models.Book;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Repositorio para la entidad {@link Book}.
@@ -13,4 +14,6 @@ import java.util.List;
  */
 public interface BookRepository extends CrudRepository<Book, Long> {
     List<Book> findByTitle(String title);
+
+    Optional<Book> findByIsbn(String isbn);
 }
