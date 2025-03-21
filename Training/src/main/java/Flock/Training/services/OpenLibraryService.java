@@ -2,15 +2,14 @@ package Flock.Training.services;
 
 import Flock.Training.dtos.BookInfoDTO;
 import Flock.Training.exceptions.ApiResponseException;
+import Flock.Training.factories.BookFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Servicio para la búsqueda de libros en la API de Open Library
@@ -18,12 +17,16 @@ import java.util.List;
 @Service
 public class OpenLibraryService {
 
+    @Autowired
+    private BookFactory bookFactory;
+
+    private static final String BASE_URL = "https://openlibrary.org";
+    private static final String BOOKS_ENDPOINT = "/api/books";
     private final WebClient webClient;
 
     public OpenLibraryService(WebClient.Builder webClientBuilder) {
-        this.webClient = webClientBuilder.baseUrl("https://openlibrary.org").build();
+        this.webClient = webClientBuilder.baseUrl(BASE_URL).build();
     }
-
 
     /**
      * Busca la información de un libro en la API externa de Open Library utilizando su ISBN.
@@ -37,7 +40,7 @@ public class OpenLibraryService {
      * @throws ApiResponseException Si hubo un error en procesar la respuesta de la API.
      */
     public BookInfoDTO getBookInfo(String isbn) {
-        String url = UriComponentsBuilder.fromPath("/api/books")
+        String url = UriComponentsBuilder.fromPath(BOOKS_ENDPOINT)
                 .queryParam("bibkeys", "ISBN:" + isbn)
                 .queryParam("jscmd", "data")
                 .queryParam("format", "json")
@@ -64,23 +67,11 @@ public class OpenLibraryService {
                 return null;
             }
 
-            // Extraer los atributos necesarios
-            String title = bookNode.path("title").asText("");
-            String subtitle = bookNode.path("subtitle").asText("");
-            List<String> authors = bookNode.path("authors").isArray()
-                    ? bookNode.path("authors").findValuesAsText("name")
-                    : Collections.emptyList();
-            int pageCount = bookNode.path("number_of_pages").asInt(0);
-            String publisher = bookNode.path("publishers").isArray()
-                    ? bookNode.path("publishers").get(0).path("name").asText("")
-                    : "";
-            String publishDate = bookNode.path("publish_date").asText("");
-
-            return new BookInfoDTO(isbn, title, subtitle, publisher, publishDate, pageCount, authors);
+            // Extraer los atributos necesarios, crear y devolver Book DTO
+            return bookFactory.createBookDTO(bookNode, isbn);
 
         } catch (Exception e) {
             throw new ApiResponseException("Error al procesar la respuesta de la API", HttpStatus.BAD_GATEWAY, e);
-
         }
     }
 }

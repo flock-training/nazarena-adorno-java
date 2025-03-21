@@ -1,18 +1,28 @@
 package Flock.Training.controllers;
 
 import Flock.Training.dtos.BookInfoDTO;
+import Flock.Training.exceptions.BookIdMismatchException;
+import Flock.Training.exceptions.BookNotFoundException;
+import Flock.Training.factories.BookFactory;
+import Flock.Training.models.Book;
+import Flock.Training.repositories.BookRepository;
 import Flock.Training.services.OpenLibraryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import Flock.Training.repositories.BookRepository;
-import Flock.Training.exceptions.*;
-import Flock.Training.models.Book;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -28,6 +38,9 @@ public class BookController {
 
     @Autowired
     private BookRepository bookRepository;
+
+    @Autowired
+    private BookFactory bookFactory;
 
     @Autowired
     private OpenLibraryService openLibraryService;
@@ -164,17 +177,7 @@ public class BookController {
         }
 
         // Guardar en la base de datos para futuras búsquedas
-        Book newBook = new Book(
-                "",
-                externalBook.getAuthors().isEmpty() ? "" : String.join(", ", externalBook.getAuthors()),
-                "",
-                externalBook.getTitle(),
-                externalBook.getSubtitle(),
-                externalBook.getPublisher(),
-                externalBook.getPublishDate(),
-                externalBook.getNumberOfPages(),
-                externalBook.getIsbn()
-        );
+        Book newBook = bookFactory.createBook(externalBook);
         bookRepository.save(newBook);
 
         // Guardar el libro en la BD y devolver 201 Created
