@@ -1,12 +1,15 @@
 package Flock.Training.controllers;
 
+import Flock.Training.dtos.BookInfoDTO;
 import Flock.Training.exceptions.GlobalExceptionHandler;
 import Flock.Training.models.Book;
 import Flock.Training.repositories.BookRepository;
 import Flock.Training.repositories.UserRepository;
+import Flock.Training.services.OpenLibraryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,11 +23,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -41,12 +42,19 @@ class BookControllerTest {
     @MockBean
     private UserRepository userRepository;
 
+    @MockBean
+    private OpenLibraryService openLibraryService;
+
     @Autowired
     private ObjectMapper objectMapper;
 
     private Book book;
 
+    private BookInfoDTO bookInfoDTO;
+
     private static final String URL_API = "/api/books";
+
+    private static String isbn;
 
     @BeforeEach
     void setUp() {
@@ -54,6 +62,18 @@ class BookControllerTest {
                 "El señor de los anillos", "El retorno del rey",
                 "Planeta", "1999", 1348, "7856974123652");
         book.setId(1L);
+
+        bookInfoDTO = new BookInfoDTO(
+                "7856974123652",
+                "El señor de los anillos",
+                "El retorno del rey",
+                "Planeta",
+                "1999",
+                1348,
+                List.of("J.R.R Tolkien")
+        );
+
+        isbn = book.getIsbn();
     }
 
     @Test
@@ -101,6 +121,44 @@ class BookControllerTest {
                 .andExpect(status().isOk());
 
         verify(bookRepository, times(1)).deleteById(1L);
+    }
+
+    @Test
+    void shouldReturnBookFromDatabase() throws Exception {
+        when(bookRepository.findByIsbn(isbn)).thenReturn(Optional.of(book));
+
+        mockMvc.perform(get(URL_API + "/isbn/" + isbn).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("El señor de los anillos"));
+
+        verify(bookRepository, times(1)).findByIsbn(isbn);
+    }
+
+    @Test
+    void shouldFetchFromExternalApiAndSave() throws Exception {
+        when(bookRepository.findByIsbn("7856974123652")).thenReturn(Optional.empty());
+        when(openLibraryService.getBookInfo("7856974123652")).thenReturn(bookInfoDTO);
+        when(bookRepository.save(any(Book.class))).thenReturn(book);
+
+        mockMvc.perform(get(URL_API + "/isbn/" + isbn).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.title").value("El señor de los anillos"));
+
+        verify(bookRepository, times(1)).findByIsbn(isbn);
+        verify(openLibraryService, times(1)).getBookInfo(isbn);
+        verify(bookRepository, times(1)).save(any(Book.class));
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenBookDoesNotExistAnywhere() throws Exception {
+        when(bookRepository.findByIsbn(isbn)).thenReturn(Optional.empty());
+        when(openLibraryService.getBookInfo(isbn)).thenReturn(null);
+
+        mockMvc.perform(get(URL_API + "/isbn/" + isbn).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+        verify(bookRepository, times(1)).findByIsbn(isbn);
+        verify(openLibraryService, times(1)).getBookInfo(isbn);
     }
 
     // Métodos auxiliares

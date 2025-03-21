@@ -3,12 +3,14 @@ package Flock.Training.repositories;
 import static org.junit.jupiter.api.Assertions.*;
 
 import Flock.Training.models.User;
+import Flock.Training.services.OpenLibraryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
@@ -16,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 @ExtendWith(SpringExtension.class)
+@MockBean(OpenLibraryService.class)
 @DataJpaTest
 class UserRepositoryTest {
 

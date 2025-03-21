@@ -24,5 +24,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(ex, ex.getLocalizedMessage(),
                 new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
+
+    /**
+     * Maneja excepciones de tipo ApiResponseException.
+     *
+     * @param ex Excepción personalizada que contiene el código de estado HTTP y el mensaje de error.
+     * @return ResponseEntity con el mensaje de error y el código de estado definido en la excepción.
+     */
+    @ExceptionHandler(ApiResponseException.class)
+    public ResponseEntity<String> handleApiResponseException(ApiResponseException ex) {
+        return ResponseEntity.status(ex.getStatus()).body(ex.getMessage());
+    }
 }
 

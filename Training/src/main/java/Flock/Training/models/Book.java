@@ -47,7 +47,7 @@ public class Book {
     /**
      * Código ISBN del libro.
      * <p>
-     * Número de 13 cifras que identifica de una manera única a cada libro.
+     * Número que identifica de una manera única a cada libro.
      */
     @Schema(description = "Número identificador del libro", example = "9788484280194")
     private String isbn;
