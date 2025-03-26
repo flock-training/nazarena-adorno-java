@@ -8,14 +8,10 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {
-        "Flock.Training.controllers",
-        "Flock.Training.services",
-        "Flock.Training.factories"
-})
+@ComponentScan(basePackages = {"Flock.Training.controllers", "Flock.Training.services", "Flock.Training.factories", "Flock.Training.security"})
 @EntityScan("Flock.Training.models")
 @EnableJpaRepositories("Flock.Training.repositories")
-@ConfigurationPropertiesScan("Flock.Training.config")
+@ConfigurationPropertiesScan(basePackages = {"Flock.Training.config"})
 public class TrainingApplication {
 
     public static void main(String[] args) {

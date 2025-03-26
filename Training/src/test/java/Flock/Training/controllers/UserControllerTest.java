@@ -7,6 +7,7 @@ import Flock.Training.models.Book;
 import Flock.Training.models.User;
 import Flock.Training.repositories.BookRepository;
 import Flock.Training.repositories.UserRepository;
+import Flock.Training.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
@@ -43,6 +45,9 @@ class UserControllerTest {
 
     @MockBean
     private BookRepository bookRepository;
+
+    @MockBean
+    private UserService userService;
 
     private static final Long USER_ID = 1L;
     private static final Long BOOK_ID = 100L;
@@ -88,6 +93,7 @@ class UserControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = "USER")
     void shouldGetAllUsers() throws Exception {
         when(userRepository.findAll()).thenReturn(Collections.singletonList(user));
 
@@ -97,6 +103,7 @@ class UserControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = "USER")
     void shouldGetUserById() throws Exception {
         mockUserExists();
 
@@ -106,6 +113,7 @@ class UserControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = "USER")
     void shouldReturn404WhenUserNotFound() throws Exception {
         mockUserNotExists();
 
@@ -114,17 +122,7 @@ class UserControllerTest {
     }
 
     @Test
-    void shouldCreateUser() throws Exception {
-        when(userRepository.save(any(User.class))).thenReturn(user);
-
-        mockMvc.perform(post(URL_API)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(getUserJson()))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.username").value("johndoe123"));
-    }
-
-    @Test
+    @WithMockUser(username = "user", roles = "USER")
     void shouldAddBookToUser() throws Exception {
         mockUserExists();
         mockBookExists();
@@ -135,6 +133,7 @@ class UserControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = "USER")
     void shouldReturn404WhenAddingBookToNonExistingUser() throws Exception {
         mockUserNotExists();
 
@@ -143,6 +142,7 @@ class UserControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = "USER")
     void shouldReturn404WhenAddingNonExistingBookToUser() throws Exception {
         mockUserExists();
         mockBookNotExists();
@@ -152,6 +152,7 @@ class UserControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = "USER")
     void shouldRemoveBookFromUser() throws Exception {
         user.addBook(book);
         mockUserExists();
@@ -163,6 +164,7 @@ class UserControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = "USER")
     void shouldReturn404WhenRemovingBookFromNonExistingUser() throws Exception {
         mockUserNotExists();
 
@@ -171,11 +173,32 @@ class UserControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = "USER")
     void shouldReturn404WhenRemovingNonExistingBookFromUser() throws Exception {
         mockUserExists();
         mockBookNotExists();
 
         mockMvc.perform(delete(URL_API + "/{userId}/books/{bookId}", USER_ID, BOOK_ID))
                 .andExpect(status().isNotFound());
+    }
+
+    /**
+     * Prueba unitaria: Controlador de usuarios
+     * Creación de usuarios utilizando userService
+     */
+    @Test
+    void shouldCreateUser() throws Exception {
+        User savedUser = new User();
+        savedUser.setUsername("juanPerez123");
+        savedUser.setPassword("encodedPassword"); // Simulación de la contraseña encriptada
+
+        // Simular el comportamiento del servicio al guardar el usuario
+        when(userService.saveUser(any(User.class))).thenReturn(savedUser);
+
+        mockMvc.perform(post(URL_API)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(getUserJson())) // Simula un JSON de usuario
+                .andExpect(status().isCreated()) // Verifica que responde con 201 Created
+                .andExpect(jsonPath("$.username").value("juanPerez123")); // Verifica username
     }
 }
