@@ -2,11 +2,15 @@ package Flock.Training.models;
 
 import Flock.Training.exceptions.BookAlreadyOwnedException;
 import Flock.Training.exceptions.BookNotFoundException;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -16,7 +20,7 @@ import java.util.List;
 @Entity
 @Table(name = "Users")
 @Schema(name = "User", description = "Representa un usuario en la plataforma")
-public class User {
+public class User implements UserDetails {
 
     /**
      * Atributos
@@ -54,6 +58,9 @@ public class User {
     @Schema(description = "Lista de libros asociados al usuario")
     private List<Book> books = new ArrayList<>();
 
+    private String password;
+
+
     /**
      * Constructor por defecto
      */
@@ -65,6 +72,19 @@ public class User {
         this.name = name;
         this.birthdate = birthdate;
         this.books = books;
+    }
+
+    public User(String username, String name, LocalDate birthdate, List<Book> books, String password) {
+        this.username = username;
+        this.name = name;
+        this.birthdate = birthdate;
+        this.books = books;
+        this.password = password;
+    }
+
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
     }
 
     /**
@@ -100,6 +120,46 @@ public class User {
 
     public void setBirthdate(LocalDate birthdate) {
         this.birthdate = birthdate;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    @JsonIgnore
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of();
+    }
+
+    
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 
     /**

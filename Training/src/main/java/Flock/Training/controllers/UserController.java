@@ -3,6 +3,7 @@ package Flock.Training.controllers;
 import Flock.Training.exceptions.*;
 import Flock.Training.models.*;
 import Flock.Training.repositories.*;
+import Flock.Training.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -21,6 +22,10 @@ import java.util.stream.StreamSupport;
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
+
+    @Autowired
+    private UserService userService;
+
     @Autowired
     private UserRepository userRepository;
 
@@ -82,7 +87,7 @@ public class UserController {
     )
     public User create(@RequestBody User user) {
         try {
-            return userRepository.save(user);
+            return userService.saveUser(user);
         } catch (Exception ex) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST, "There was an error creating the user", ex);

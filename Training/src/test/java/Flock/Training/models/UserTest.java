@@ -9,18 +9,20 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(SpringExtension.class)
 @MockBean(WebClient.Builder.class)
 @MockBean(OpenLibraryService.class)
+@MockBean(SecurityFilterChain.class)
 @DataJpaTest
 class UserTest {
 

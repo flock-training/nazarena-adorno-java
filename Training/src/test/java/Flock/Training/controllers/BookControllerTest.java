@@ -9,7 +9,6 @@ import Flock.Training.services.OpenLibraryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,6 +16,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
@@ -77,6 +77,8 @@ class BookControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = "USER")
+        // Simula un usuario autenticado
     void shouldGetBookById() throws Exception {
         when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
 
@@ -87,6 +89,7 @@ class BookControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = "USER")
     void shouldReturnNotFoundWhenBookDoesNotExist() throws Exception {
         when(bookRepository.findById(99L)).thenReturn(Optional.empty());
 
@@ -95,6 +98,7 @@ class BookControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = "USER")
     void shouldGetBooksByTitle() throws Exception {
         when(bookRepository.findByTitle(book.getTitle())).thenReturn(List.of(book));
 
@@ -113,6 +117,7 @@ class BookControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = "USER")
     void shouldDeleteBook() throws Exception {
         when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
         doNothing().when(bookRepository).deleteById(1L);
@@ -124,6 +129,7 @@ class BookControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = "USER")
     void shouldReturnBookFromDatabase() throws Exception {
         when(bookRepository.findByIsbn(isbn)).thenReturn(Optional.of(book));
 
@@ -135,6 +141,7 @@ class BookControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = "USER")
     void shouldFetchFromExternalApiAndSave() throws Exception {
         when(bookRepository.findByIsbn("7856974123652")).thenReturn(Optional.empty());
         when(openLibraryService.getBookInfo("7856974123652")).thenReturn(bookInfoDTO);
@@ -150,6 +157,7 @@ class BookControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "user", roles = "USER")
     void shouldReturnNotFoundWhenBookDoesNotExistAnywhere() throws Exception {
         when(bookRepository.findByIsbn(isbn)).thenReturn(Optional.empty());
         when(openLibraryService.getBookInfo(isbn)).thenReturn(null);
