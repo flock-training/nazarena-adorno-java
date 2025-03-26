@@ -20,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,8 +29,7 @@ import java.util.Optional;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -56,6 +56,8 @@ class UserControllerTest {
     private User user;
     private Book book;
 
+    private Principal mockPrincipal;
+
     @BeforeEach
     void setUp() {
         user = new User("johndoe123", "John Doe", LocalDate.of(1990, 5, 15), new ArrayList<>());
@@ -63,6 +65,9 @@ class UserControllerTest {
                 "El señor de los anillos", "El retorno del rey",
                 "Planeta", "1999", 1348, "7856974123652");
         book.setId(BOOK_ID);
+
+        mockPrincipal = mock(Principal.class);
+        when(mockPrincipal.getName()).thenReturn("testUser"); // Simula un usuario autenticado
     }
 
     private void mockUserExists() {
@@ -119,6 +124,14 @@ class UserControllerTest {
 
         mockMvc.perform(get(URL_API + "/{userId}", USER_ID))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser(username = "testUser", roles = "USER")
+    void shouldReturnCurrentUserNameWhenGetUsername() throws Exception {
+        mockMvc.perform(get(URL_API + "/username").principal(mockPrincipal))
+                .andExpect(status().isOk()) // 200 OK
+                .andExpect(content().string("testUser")); // Verifica que el contenido de la respuesta sea el nombre de usuario
     }
 
     @Test

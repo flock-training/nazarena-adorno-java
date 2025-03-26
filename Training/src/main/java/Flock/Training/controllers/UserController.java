@@ -5,6 +5,7 @@ import Flock.Training.models.*;
 import Flock.Training.repositories.*;
 import Flock.Training.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -66,6 +68,15 @@ public class UserController {
             })
     public User findOne(@PathVariable Long id) {
         return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User with ID " + id + " not found"));
+    }
+
+    @GetMapping(value = "/username")
+    @Operation(
+            summary = "Obtener el username del usuario autenticado",
+            description = "Devuelve el username del usuario actualmente autenticado basado en el `Principal` de Spring Security."
+    )
+    public String currentUserName(@Parameter(hidden = true) Principal principal) {
+        return principal.getName();
     }
 
     /**
