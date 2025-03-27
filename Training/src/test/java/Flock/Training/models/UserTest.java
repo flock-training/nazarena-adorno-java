@@ -34,7 +34,7 @@ class UserTest {
 
     @Test
     void shouldCreateUserWithConstructor() {
-        User user = new User("johndoe123", "John Doe", LocalDate.of(1990, 5, 15), new ArrayList<>());
+        User user = new User(null, "johndoe123", "John Doe", LocalDate.of(1990, 5, 15), new ArrayList<>(), "encodedPassword");
 
         assertThat(user.getUsername()).isEqualTo("johndoe123");
         assertThat(user.getName()).isEqualTo("John Doe");

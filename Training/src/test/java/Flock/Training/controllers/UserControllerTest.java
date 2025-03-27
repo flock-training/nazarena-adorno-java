@@ -53,25 +53,43 @@ class UserControllerTest {
     private static final Long BOOK_ID = 100L;
     private static final String URL_API = "/api/users";
 
-    private User user;
+    private User userWithoutId;
+    private User userWithId;
     private Book book;
 
     private Principal mockPrincipal;
 
     @BeforeEach
     void setUp() {
-        user = new User("johndoe123", "John Doe", LocalDate.of(1990, 5, 15), new ArrayList<>());
-        book = new Book("Narrativa", "J.R.R Tolkien", "http://urlImagen.com",
-                "El señor de los anillos", "El retorno del rey",
-                "Planeta", "1999", 1348, "7856974123652");
-        book.setId(BOOK_ID);
+        userWithoutId = User.builder()
+                .username("johndoe123")
+                .name("John Doe")
+                .birthdate(LocalDate.of(1990, 5, 15))
+                .books(new ArrayList<>())
+                .password("encodedPassword")
+                .build();
+
+        userWithId = userWithoutId.toBuilder().id(USER_ID).build();
+
+        book = Book.builder()
+                .id(BOOK_ID)
+                .genre("Narrativa")
+                .author("J.R.R Tolkien")
+                .image("http://urlImagen.com")
+                .title("El señor de los anillos")
+                .subtitle("El retorno del rey")
+                .publisher("Planeta")
+                .year("1999")
+                .pages(1348)
+                .isbn("7856974123652")
+                .build();
 
         mockPrincipal = mock(Principal.class);
         when(mockPrincipal.getName()).thenReturn("testUser"); // Simula un usuario autenticado
     }
 
     private void mockUserExists() {
-        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(user));
+        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(userWithId));
     }
 
     private void mockBookExists() {
@@ -100,7 +118,7 @@ class UserControllerTest {
     @Test
     @WithMockUser(username = "user", roles = "USER")
     void shouldGetAllUsers() throws Exception {
-        when(userRepository.findAll()).thenReturn(Collections.singletonList(user));
+        when(userRepository.findAll()).thenReturn(Collections.singletonList(userWithId));
 
         mockMvc.perform(get(URL_API))
                 .andExpect(status().isOk())
@@ -139,7 +157,7 @@ class UserControllerTest {
     void shouldAddBookToUser() throws Exception {
         mockUserExists();
         mockBookExists();
-        when(userRepository.save(any(User.class))).thenReturn(user);
+        when(userRepository.save(any(User.class))).thenReturn(userWithId);
 
         mockMvc.perform(post(URL_API + "/{userId}/books/{bookId}", USER_ID, BOOK_ID))
                 .andExpect(status().isOk());
@@ -167,10 +185,10 @@ class UserControllerTest {
     @Test
     @WithMockUser(username = "user", roles = "USER")
     void shouldRemoveBookFromUser() throws Exception {
-        user.addBook(book);
+        userWithId.addBook(book);
         mockUserExists();
         mockBookExists();
-        when(userRepository.save(any(User.class))).thenReturn(user);
+        when(userRepository.save(any(User.class))).thenReturn(userWithId);
 
         mockMvc.perform(delete(URL_API + "/{userId}/books/{bookId}", USER_ID, BOOK_ID))
                 .andExpect(status().isOk());
@@ -201,17 +219,13 @@ class UserControllerTest {
      */
     @Test
     void shouldCreateUser() throws Exception {
-        User savedUser = new User();
-        savedUser.setUsername("juanPerez123");
-        savedUser.setPassword("encodedPassword"); // Simulación de la contraseña encriptada
-
         // Simular el comportamiento del servicio al guardar el usuario
-        when(userService.saveUser(any(User.class))).thenReturn(savedUser);
+        when(userService.saveUser(any(User.class))).thenReturn(userWithoutId);
 
         mockMvc.perform(post(URL_API)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(getUserJson())) // Simula un JSON de usuario
                 .andExpect(status().isCreated()) // Verifica que responde con 201 Created
-                .andExpect(jsonPath("$.username").value("juanPerez123")); // Verifica username
+                .andExpect(jsonPath("$.username").value("johndoe123")); // Verifica username
     }
 }

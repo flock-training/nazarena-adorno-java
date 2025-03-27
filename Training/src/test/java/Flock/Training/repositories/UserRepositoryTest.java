@@ -34,7 +34,7 @@ class UserRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        user = new User("johndoe123", "John Doe", LocalDate.of(1990, 5, 15), new ArrayList<>());
+        user = new User(null, "johndoe123", "John Doe", LocalDate.of(1990, 5, 15), new ArrayList<>(), "encodedPassword");
     }
 
     @Test

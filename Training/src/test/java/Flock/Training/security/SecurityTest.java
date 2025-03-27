@@ -44,7 +44,7 @@ class SecurityTest {
     void setUp() {
         // Mockear el comportamiento del UserDetailsService para que devuelva un usuario mockeado
         when(userDetailsService.loadUserByUsername("newUser")).thenReturn(
-                new User("newUser", "Juan Perez", LocalDate.of(1990, 5, 15), new ArrayList<>(), "encodedPassword"));
+                new User(null, "newUser", "Juan Perez", LocalDate.of(1990, 5, 15), new ArrayList<>(), "encodedPassword"));
     }
 
     @Test

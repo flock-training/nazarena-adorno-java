@@ -49,7 +49,7 @@ class UserServiceTest {
     @Test
     void whenCreateUser_thenPasswordIsEncodedAndSaved() {
         // Arrange
-        User user = new User("testUser", "Juan Perez", LocalDate.of(1990, 5, 15), new ArrayList<>(), "plainPassword");
+        User user = new User(null, "testUser", "Juan Perez", LocalDate.of(1990, 5, 15), new ArrayList<>(), "plainPassword");
 
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 

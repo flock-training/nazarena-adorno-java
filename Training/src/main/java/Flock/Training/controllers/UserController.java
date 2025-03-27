@@ -106,6 +106,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(
             summary = "Eliminar usuario",
             description = "Elimina un usuario de la base de datos si existe",
@@ -139,7 +140,7 @@ public class UserController {
             }
     )
     public User updateUser(@RequestBody User user, @PathVariable Long id) {
-        if (user.getId() != id) {
+        if (!user.getId().equals(id)) {
             throw new UserIdMismatchException("User ID in path and body do not match");
         }
         userRepository.findById(id)
@@ -192,7 +193,7 @@ public class UserController {
             summary = "Elimina un libro de la lista del usuario",
             description = "Elimina un libro de la lista del usuario si existen tanto el usuario como el libro",
             responses = {
-                    @ApiResponse(responseCode = "204", description = "Libro eliminado correctamente"),
+                    @ApiResponse(responseCode = "200", description = "Libro eliminado correctamente"),
                     @ApiResponse(responseCode = "404", description = "Usuario no encontrado", content = @Content),
                     @ApiResponse(responseCode = "404", description = "Libro no encontrado", content = @Content)
             }

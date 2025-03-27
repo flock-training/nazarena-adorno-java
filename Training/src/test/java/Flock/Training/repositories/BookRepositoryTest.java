@@ -32,7 +32,7 @@ class BookRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        book = new Book("Narrativa", "J.R.R Tolkien", "http://urlImagen.com",
+        book = new Book(null, "Narrativa", "J.R.R Tolkien", "http://urlImagen.com",
                 "El señor de los anillos", "El retorno del rey", "Planeta",
                 "1999", 1348, "7856974123652");
     }
