@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -77,6 +78,25 @@ public class UserController {
     )
     public String currentUserName(@Parameter(hidden = true) Principal principal) {
         return principal.getName();
+    }
+
+    @GetMapping("/search")
+    @Operation(
+            summary = "Buscar usuarios por fecha de nacimiento y nombre",
+            description = "Busca usuarios que nacieron entre dos fechas y cuyo nombre contiene una secuencia de caracteres, sin importar mayúsculas o minúsculas.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Usuarios encontrados"),
+                    @ApiResponse(responseCode = "404", description = "No se encontraron usuarios")
+            }
+    )
+    public List<User> findUsers(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate, @RequestParam String name) {
+        List<User> users = userRepository.findByBirthdateBetweenAndNameContainingIgnoreCase(startDate, endDate, name);
+
+        if (users.isEmpty()) {
+            throw new UserNotFoundException("No users were found for the entered parameters");
+        }
+
+        return users;
     }
 
     /**
