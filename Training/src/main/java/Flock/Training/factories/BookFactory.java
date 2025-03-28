@@ -11,17 +11,17 @@ import java.util.List;
 @Component
 public class BookFactory {
     public Book createBook(BookInfoDTO dto) {
-        return new Book(
-                "",
-                dto.getAuthors().isEmpty() ? "" : String.join(", ", dto.getAuthors()),
-                "",
-                dto.getTitle(),
-                dto.getSubtitle(),
-                dto.getPublisher(),
-                dto.getPublishDate(),
-                dto.getNumberOfPages(),
-                dto.getIsbn()
-        );
+        return Book.builder()
+                .genre("")
+                .author(dto.getAuthors().isEmpty() ? "" : String.join(", ", dto.getAuthors()))
+                .image("")
+                .title(dto.getTitle())
+                .subtitle(dto.getSubtitle())
+                .publisher(dto.getPublisher())
+                .year(dto.getPublishDate())
+                .pages(dto.getNumberOfPages())
+                .isbn(dto.getIsbn())
+                .build();
     }
 
     public BookInfoDTO createBookDTO(JsonNode bookNode, String isbn) {

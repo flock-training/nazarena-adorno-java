@@ -2,6 +2,11 @@ package Flock.Training.models;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 
 /**
  * Representa la entidad 'Book' de la tabla 'Books'
@@ -9,6 +14,10 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "Books")
 @Schema(name = "Book", description = "Representa un libro")
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(toBuilder = true)
+@Data
 public class Book {
 
     /**
@@ -16,7 +25,6 @@ public class Book {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     @Schema(description = "ID único del libro", example = "1")
     private Long id;
 
@@ -51,105 +59,4 @@ public class Book {
      */
     @Schema(description = "Número identificador del libro", example = "9788484280194")
     private String isbn;
-
-    /**
-     * Constructor por defecto
-     */
-    public Book() {
-    }
-
-    public Book(String genre, String author, String image, String title, String subtitle, String publisher, String year, int pages, String isbn) {
-        this.genre = genre;
-        this.author = author;
-        this.image = image;
-        this.title = title;
-        this.subtitle = subtitle;
-        this.publisher = publisher;
-        this.year = year;
-        this.pages = pages;
-        this.isbn = isbn;
-    }
-
-    /**
-     * Getters y Setters
-     */
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getGenre() {
-        return genre;
-    }
-
-    public void setGenre(String genre) {
-        this.genre = genre;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public String getSubtitle() {
-        return subtitle;
-    }
-
-    public void setSubtitle(String subtitle) {
-        this.subtitle = subtitle;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getIsbn() {
-        return isbn;
-    }
-
-    public void setIsbn(String isbn) {
-        this.isbn = isbn;
-    }
-
-    public String getYear() {
-        return year;
-    }
-
-    public void setYear(String year) {
-        this.year = year;
-    }
-
-    public String getPublisher() {
-        return publisher;
-    }
-
-    public void setPublisher(String publisher) {
-        this.publisher = publisher;
-    }
-
-    public int getPages() {
-        return pages;
-    }
-
-    public void setPages(int pages) {
-        this.pages = pages;
-    }
 }

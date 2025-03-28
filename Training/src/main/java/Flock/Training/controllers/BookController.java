@@ -109,6 +109,7 @@ public class BookController {
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(
             summary = "Eliminar libro",
             description = "Elimina un libro de la base de datos si existe",
@@ -142,7 +143,7 @@ public class BookController {
             }
     )
     public Book updateBook(@RequestBody Book book, @PathVariable Long id) {
-        if (book.getId() != id) {
+        if (!book.getId().equals(id)) {
             throw new BookIdMismatchException("Book ID in path and body do not match");
         }
         bookRepository.findById(id)

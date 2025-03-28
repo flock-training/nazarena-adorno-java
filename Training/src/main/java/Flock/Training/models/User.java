@@ -5,6 +5,10 @@ import Flock.Training.exceptions.BookNotFoundException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -20,6 +24,10 @@ import java.util.List;
 @Entity
 @Table(name = "Users")
 @Schema(name = "User", description = "Representa un usuario en la plataforma")
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(toBuilder = true)
+@Data
 public class User implements UserDetails {
 
     /**
@@ -60,69 +68,8 @@ public class User implements UserDetails {
 
     private String password;
 
-
-    /**
-     * Constructor por defecto
-     */
-    public User() {
-    }
-
-    public User(String username, String name, LocalDate birthdate, List<Book> books) {
-        this.username = username;
-        this.name = name;
-        this.birthdate = birthdate;
-        this.books = books;
-    }
-
-    public User(String username, String name, LocalDate birthdate, List<Book> books, String password) {
-        this.username = username;
-        this.name = name;
-        this.birthdate = birthdate;
-        this.books = books;
-        this.password = password;
-    }
-
     public User(String username, String password) {
         this.username = username;
-        this.password = password;
-    }
-
-    /**
-     * Getters y Setters
-     */
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public LocalDate getBirthdate() {
-        return birthdate;
-    }
-
-    public void setBirthdate(LocalDate birthdate) {
-        this.birthdate = birthdate;
-    }
-
-    public void setPassword(String password) {
         this.password = password;
     }
 
@@ -132,7 +79,6 @@ public class User implements UserDetails {
         return List.of();
     }
 
-    
     @Override
     public String getPassword() {
         return password;
@@ -163,55 +109,27 @@ public class User implements UserDetails {
     }
 
     /**
-     * Obtiene la lista de libros del usuario.
-     * La lista devuelta es inmodificable.
-     *
-     * @return Lista de libros asociados al usuario.
+     * Obtiene la lista de libros del usuario como una lista inmutable.
      */
     public List<Book> getBooks() {
-        return (List<Book>) Collections.unmodifiableList(books);
+        return Collections.unmodifiableList(books);
     }
 
     /**
-     * Establece una nueva lista de libros para el usuario.
-     *
-     * @param books Lista de libros a asignar.
-     */
-    public void setBooks(List<Book> books) {
-        this.books = books;
-    }
-
-    /**
-     * Agrega un libro a la lista del usuario.
-     * Si el libro ya está en la lista, lanza una excepción.
-     *
-     * @param book El libro a agregar.
-     * @throws BookAlreadyOwnedException Si el libro ya está en la lista del usuario.
+     * Agrega un libro a la lista del usuario, verificando si ya existe.
      */
     public void addBook(Book book) {
-        if (this.books == null) {
-            this.books = new ArrayList<>();
-        }
-
-        if (bookExistsInUserList(this.books, book)) {
+        if (bookExistsInUserList(book)) {
             throw new BookAlreadyOwnedException("The book with ID " + book.getId() + " and title '" + book.getTitle() + "' is already in the list.");
         }
         this.books.add(book);
     }
 
     /**
-     * Elimina un libro de la lista del usuario.
-     * Si usuario no posee libros o el libro no está en la lista, lanza una excepción.
-     *
-     * @param book El libro a eliminar.
-     * @throws BookNotFoundException Si el libro no se encuentra en la lista del usuario.
+     * Elimina un libro de la lista del usuario si existe.
      */
     public void removeBook(Book book) {
-        if (this.books == null) {
-            throw new BookNotFoundException("The user does not have a book list yet.");
-        }
-
-        if (!bookExistsInUserList(this.books, book)) {
+        if (!bookExistsInUserList(book)) {
             throw new BookNotFoundException("The book with ID " + book.getId() + " and title '" + book.getTitle() + "' is not in the list.");
         }
         this.books.remove(book);
@@ -219,13 +137,8 @@ public class User implements UserDetails {
 
     /**
      * Verifica si un libro ya existe en la lista del usuario.
-     *
-     * @param existingBooks Lista de libros actual del usuario.
-     * @param newBook       Libro a verificar.
-     * @return {@code true} si el libro ya está en la lista, {@code false} en caso contrario.
      */
-    private boolean bookExistsInUserList(List<Book> existingBooks, Book newBook) {
-        return existingBooks.stream()
-                .anyMatch(existingBook -> existingBook.getId().equals(newBook.getId()));
+    private boolean bookExistsInUserList(Book book) {
+        return books.stream().anyMatch(existingBook -> existingBook.getId().equals(book.getId()));
     }
 }
