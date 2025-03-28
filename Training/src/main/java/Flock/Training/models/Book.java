@@ -4,10 +4,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 
 
 /**
@@ -16,12 +14,10 @@ import lombok.ToString;
 @Entity
 @Table(name = "Books")
 @Schema(name = "Book", description = "Representa un libro")
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-@ToString
+@Data
 public class Book {
 
     /**

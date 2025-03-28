@@ -7,10 +7,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -26,12 +24,10 @@ import java.util.List;
 @Entity
 @Table(name = "Users")
 @Schema(name = "User", description = "Representa un usuario en la plataforma")
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-@ToString
+@Data
 public class User implements UserDetails {
 
     /**
