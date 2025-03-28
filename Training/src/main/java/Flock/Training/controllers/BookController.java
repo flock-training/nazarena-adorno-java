@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -79,6 +80,24 @@ public class BookController {
             })
     public Book findOne(@PathVariable Long id) {
         return bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException("Book with ID " + id + " not found"));
+    }
+
+    @GetMapping("/search")
+    @Operation(
+            summary = "Obtener lista de libros por Editorial, Género y Año.",
+            description = "Busca libros que coincidan con los parámetros ingresados y los devuelve si existen.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Libros encontrados"),
+                    @ApiResponse(responseCode = "404", description = "Libros no encontrados")
+            })
+    public List<Book> findBooks(@RequestParam String publisher, @RequestParam String genre, @RequestParam String year) {
+        List<Book> books = bookRepository.findByPublisherAndGenreAndYear(publisher, genre, year);
+
+        if (books.isEmpty()) {
+            throw new BookNotFoundException("No books were found for the entered parameters");
+        }
+
+        return books;
     }
 
     /**
