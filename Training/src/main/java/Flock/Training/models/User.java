@@ -64,6 +64,7 @@ public class User implements UserDetails {
     )
     @Column(nullable = false)
     @Schema(description = "Lista de libros asociados al usuario")
+    @Builder.Default
     private List<Book> books = new ArrayList<>();
 
     private String password;
