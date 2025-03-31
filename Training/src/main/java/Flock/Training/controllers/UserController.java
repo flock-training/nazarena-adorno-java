@@ -89,7 +89,7 @@ public class UserController {
                     @ApiResponse(responseCode = "404", description = "No se encontraron usuarios")
             }
     )
-    public List<User> findUsers(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate, @RequestParam String name) {
+    public List<User> findUsers(@RequestParam(required = false) LocalDate startDate, @RequestParam(required = false) LocalDate endDate, @RequestParam(required = false) String name) {
         List<User> users = userRepository.findByBirthdateBetweenAndNameContainingIgnoreCase(startDate, endDate, name);
 
         if (users.isEmpty()) {

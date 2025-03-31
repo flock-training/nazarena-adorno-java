@@ -90,7 +90,7 @@ public class BookController {
                     @ApiResponse(responseCode = "200", description = "Libros encontrados"),
                     @ApiResponse(responseCode = "404", description = "Libros no encontrados")
             })
-    public List<Book> findBooks(@RequestParam String publisher, @RequestParam String genre, @RequestParam String year) {
+    public List<Book> findBooks(@RequestParam(required = false) String publisher, @RequestParam(required = false) String genre, @RequestParam(required = false) String year) {
         List<Book> books = bookRepository.findByPublisherAndGenreAndYear(publisher, genre, year);
 
         if (books.isEmpty()) {

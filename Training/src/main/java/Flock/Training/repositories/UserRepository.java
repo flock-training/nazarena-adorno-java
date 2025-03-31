@@ -1,6 +1,7 @@
 package Flock.Training.repositories;
 
 import Flock.Training.models.User;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import java.time.LocalDate;
@@ -16,5 +17,8 @@ import java.util.Optional;
 public interface UserRepository extends CrudRepository<User, Long> {
     Optional<User> findByUsername(String username);
 
+    @Query("SELECT u FROM User u " +
+            "WHERE (:startDate IS NULL OR :endDate IS NULL OR u.birthdate BETWEEN :startDate AND :endDate) " +
+            "AND (:namePart IS NULL OR LOWER(u.name) LIKE LOWER(CONCAT('%', :namePart, '%')))")
     List<User> findByBirthdateBetweenAndNameContainingIgnoreCase(LocalDate startDate, LocalDate endDate, String namePart);
 }

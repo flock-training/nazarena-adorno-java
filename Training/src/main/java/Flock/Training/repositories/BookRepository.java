@@ -1,6 +1,7 @@
 package Flock.Training.repositories;
 
 import Flock.Training.models.Book;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
@@ -17,5 +18,9 @@ public interface BookRepository extends CrudRepository<Book, Long> {
 
     Optional<Book> findByIsbn(String isbn);
 
+    @Query("SELECT b FROM Book b " +
+            "WHERE (:publisher IS NULL OR b.publisher = :publisher) " +
+            "AND (:genre IS NULL OR b.genre = :genre) " +
+            "AND (:year IS NULL OR b.year = :year)")
     List<Book> findByPublisherAndGenreAndYear(String publisher, String genre, String year);
 }
